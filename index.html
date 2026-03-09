@@ -1,242 +1,172 @@
 <!DOCTYPE html>
 <html lang="th">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>เช็คสถานะจ่ายเงิน (Secure Version)</title>
+    <style>
+        /* สไตล์คงเดิมตามที่คุณออกแบบไว้ แต่ปรับให้ดูสะอาดตาขึ้น */
+        body {
+            font-family: 'Sarabun', system-ui, -apple-system, sans-serif;
+            background: linear-gradient(135deg, #3b82f6, #6366f1);
+            margin: 0;
+            padding: 20px;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
 
-<title>เช็คสถานะจ่ายเงิน</title>
+        .container {
+            width: 100%;
+            max-width: 500px;
+            background: white;
+            padding: 30px;
+            border-radius: 16px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
 
-<style>
+        h2 { text-align: center; margin-bottom: 25px; color: #111827; }
 
-body{
-font-family:system-ui;
-background:linear-gradient(135deg,#3b82f6,#6366f1);
-margin:0;
-padding:20px;
-min-height:100vh;
-display:flex;
-align-items:center;
-justify-content:center;
-}
+        select, input {
+            width: 100%;
+            padding: 12px;
+            margin: 8px 0;
+            border-radius: 8px;
+            border: 1px solid #d1d5db;
+            font-size: 16px;
+            box-sizing: border-box;
+        }
 
-.container{
-width:100%;
-max-width:600px;
-background:white;
-padding:30px;
-border-radius:16px;
-box-shadow:0 10px 30px rgba(0,0,0,0.2);
-animation:fade .5s ease;
-}
+        button {
+            width: 100%;
+            padding: 14px;
+            margin-top: 15px;
+            border: none;
+            border-radius: 10px;
+            background: linear-gradient(135deg, #2563eb, #4f46e5);
+            color: white;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: .2s;
+        }
 
-@keyframes fade{
-from{opacity:0;transform:translateY(10px)}
-to{opacity:1}
-}
+        button:hover { transform: translateY(-1px); opacity: 0.9; }
 
-h2{
-text-align:center;
-margin-bottom:25px;
-color:#111827;
-}
+        table {
+            width: 100%;
+            margin-top: 20px;
+            border-collapse: collapse;
+            border-radius: 10px;
+            overflow: hidden;
+        }
 
-select,input{
-width:100%;
-padding:12px;
-margin:6px 0;
-border-radius:8px;
-border:1px solid #d1d5db;
-font-size:16px;
-transition:.2s;
-}
+        th { background: #f3f4f6; padding: 12px; font-size: 14px; border-bottom: 2px solid #e5e7eb; }
+        td { padding: 12px; border-bottom: 1px solid #eee; text-align: center; }
 
-select:focus,input:focus{
-outline:none;
-border-color:#3b82f6;
-box-shadow:0 0 0 2px rgba(59,130,246,.2);
-}
-
-button{
-width:100%;
-padding:14px;
-margin-top:10px;
-border:none;
-border-radius:10px;
-background:linear-gradient(135deg,#2563eb,#4f46e5);
-color:white;
-font-size:18px;
-font-weight:bold;
-cursor:pointer;
-transition:.2s;
-}
-
-button:hover{
-transform:translateY(-1px);
-box-shadow:0 6px 14px rgba(0,0,0,.15);
-}
-
-table{
-width:100%;
-margin-top:20px;
-border-collapse:collapse;
-overflow:hidden;
-border-radius:10px;
-}
-
-th{
-background:#f3f4f6;
-padding:10px;
-font-size:15px;
-}
-
-td{
-padding:10px;
-border-bottom:1px solid #eee;
-text-align:center;
-}
-
-tr:nth-child(even){
-background:#fafafa;
-}
-
-.paid{
-color:#16a34a;
-font-weight:bold;
-}
-
-.notpaid{
-color:#dc2626;
-font-weight:bold;
-}
-
-.loading{
-text-align:center;
-margin-top:15px;
-font-size:18px;
-}
-
-.total{
-margin-top:15px;
-font-size:20px;
-font-weight:bold;
-text-align:center;
-color:#dc2626;
-background:#fee2e2;
-padding:10px;
-border-radius:8px;
-}
-
-</style>
-
+        .paid { color: #16a34a; font-weight: bold; }
+        .notpaid { color: #dc2626; font-weight: bold; }
+        .loading { text-align: center; margin-top: 20px; color: #6b7280; }
+        
+        .total {
+            margin-top: 20px;
+            font-size: 18px;
+            font-weight: bold;
+            text-align: center;
+            color: #b91c1c;
+            background: #fee2e2;
+            padding: 15px;
+            border-radius: 10px;
+        }
+    </style>
 </head>
-
 <body>
 
 <div class="container">
+    <h2>💰 เช็คสถานะจ่ายเงิน</h2>
 
-<h2>💰 เช็คสถานะจ่ายเงิน</h2>
+    <select id="year">
+        <option value="1">ปี 1</option>
+        <option value="2">ปี 2</option>
+    </select>
 
-<select id="year">
-<option value="1">ปี 1</option>
-<option value="2">ปี 2</option>
-</select>
+    <select id="term">
+        <option value="1">เทอม 1</option>
+        <option value="2">เทอม 2</option>
+    </select>
 
-<select id="term">
-<option value="1">เทอม 1</option>
-<option value="2">เทอม 2</option>
-</select>
+    <input type="text" id="name" placeholder="พิมพ์ชื่อ-นามสกุล ของคุณ" autocomplete="off">
 
-<input id="name" placeholder="พิมพ์ชื่อ">
+    <button onclick="check()">🔍 ตรวจสอบข้อมูล</button>
 
-<button onclick="check()">🔍 ตรวจสอบ</button>
-
-<div id="result"></div>
-
+    <div id="result"></div>
 </div>
 
 <script>
+    // *** ใส่ URL ของ Google Apps Script ที่ Deploy ใหม่แล้วที่นี่ ***
+    const API_URL = "https://script.google.com/macros/s/AKfycbz3euWXE-hK-3pYB8nRQlmRjEUcgQwT3eoR9Kiiq1OxvywxvmU_U45rEkYFnokSoRc36A/exec";
 
-const API_URL="https://script.google.com/macros/s/AKfycbwB0FHYLcWAUsQi1dKJbG3lkcc_0a7uWP4j32UcHNZWkJvIP-x3IN70vV7AeCn6aWR-6A/exec";
+    async function check() {
+        const resultDiv = document.getElementById("result");
+        const nameInput = document.getElementById("name").value.trim();
+        const year = document.getElementById("year").value;
+        const term = document.getElementById("term").value;
 
-async function check(){
+        if (!nameInput) {
+            alert("กรุณาระบุชื่อเพื่อตรวจสอบ");
+            return;
+        }
 
-let result=document.getElementById("result");
-result.innerHTML='<div class="loading">⏳ กำลังตรวจสอบ...</div>';
+        resultDiv.innerHTML = '<div class="loading">⏳ กำลังดึงข้อมูลเฉพาะของคุณ...</div>';
 
-let year=document.getElementById("year").value;
-let term=document.getElementById("term").value;
-let url=API_URL+"?year="+year+"&term="+term;
+        // ส่ง parameter ไปหา API (เพิ่ม &name=...)
+        // วิธีนี้จะทำให้ API ส่งข้อมูลมาแค่แถวเดียว ปลอดภัยกว่าเดิม
+        const finalUrl = `${API_URL}?year=${year}&term=${term}&name=${encodeURIComponent(nameInput)}`;
 
-let name=document.getElementById("name").value.trim().toLowerCase();
+        try {
+            const response = await fetch(finalUrl);
+            const resData = await response.json(); // เปลี่ยนมารับแบบ JSON
 
-try{
+            if (!resData.found) {
+                resultDiv.innerHTML = "<div class='loading' style='color:red;'>❌ ไม่พบข้อมูลรายชื่อนี้ โปรดตรวจสอบการพิมพ์</div>";
+                return;
+            }
 
-let res=await fetch(url);
-let text=await res.text();
+            // ข้อมูลที่ได้จาก API จะส่งมาแค่แถวเดียวในรูปแบบ Array
+            const rowData = resData.data; 
+            
+            let html = "<table><tr><th>สัปดาห์</th><th>สถานะ</th></tr>";
+            let unpaidCount = 0;
 
-let rows=text.split("\n");
+            // วนลูปเช็คสถานะ (สมมติว่าวันที่เริ่มที่ Column index 4 เหมือนเดิม)
+            for (let i = 4; i <= 19; i++) {
+                let weekNum = i - 3;
+                let status = String(rowData[i] || "").toUpperCase();
 
-let html="<table><tr><th>สัปดาห์</th><th>สถานะ</th></tr>";
-let found=false;
-let unpaid=0;
+                if (status === "TRUE" || status === "1") {
+                    html += `<tr><td>สัปดาห์ที่ ${weekNum}</td><td class="paid">✅ จ่ายแล้ว</td></tr>`;
+                } else {
+                    html += `<tr><td>สัปดาห์ที่ ${weekNum}</td><td class="notpaid">❌ ยังไม่จ่าย</td></tr>`;
+                    unpaidCount++;
+                }
+            }
 
-rows.forEach(r=>{
+            html += "</table>";
+            let totalAmount = unpaidCount * 20;
 
-let col=r.split(",");
+            resultDiv.innerHTML = html + `
+                <div class="total">
+                    <div>ยอดค้างชำระรวม</div>
+                    <div style="font-size:24px;">${totalAmount} บาท</div>
+                </div>`;
 
-if(col[1]){
-
-let sheetName=col[1].toLowerCase();
-
-if(sheetName.includes(name)){
-
-found=true;
-
-for (let i = 4; i <= 19; i++) {
-
-let week=i-3;
-
-let value=String(col[i]||"")
-.replace(/"/g,"")
-.replace(/\r/g,"")
-.trim()
-.toUpperCase();
-
-if(value==="TRUE"||value==="1"){
-html+=`<tr><td>${week}</td><td class="paid">✅ จ่ายแล้ว</td></tr>`;
-}else{
-html+=`<tr><td>${week}</td><td class="notpaid">❌ ยังไม่จ่าย</td></tr>`;
-unpaid++;
-}
-
-}
-
-}
-
-}
-
-});
-
-html+="</table>";
-
-let total=unpaid*20;
-
-if(!found){
-result.innerHTML="<div class='loading'>❗ ไม่พบชื่อ</div>";
-}else{
-result.innerHTML=html+`<div class="total">ยอดค้างชำระ: ${total} บาท</div>`;
-}
-
-}catch{
-
-result.innerHTML="❌ โหลดข้อมูลไม่ได้";
-
-}
-
-}
-
+        } catch (error) {
+            console.error(error);
+            resultDiv.innerHTML = "<div class='loading' style='color:red;'>❌ เกิดข้อผิดพลาดในการเชื่อมต่อ API</div>";
+        }
+    }
 </script>
 
 </body>
 </html>
-
