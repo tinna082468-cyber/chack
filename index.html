@@ -155,22 +155,23 @@ if(sheetName.includes(name)){
 
 found=true;
 
-for(let i=4;i<=19;i++){
+for (let i = 4; i <= 19; i++) {
 
-let week=i-3;
+  let week = i - 3;
 
-// ทำความสะอาดค่าที่อ่านจาก CSV
-let value=(col[i]||"")
-.replace(/"/g,"")   // ลบ "
-.replace(/\r/g,"")  // ลบ \r
-.trim()
-.toUpperCase();
+  console.log("week", week, "value:", col[i]);
 
-if(value==="TRUE"){
-html+=`<tr><td>${week}</td><td class="paid">จ่ายแล้ว</td></tr>`;
-}else{
-html+=`<tr><td>${week}</td><td class="notpaid">ยังไม่จ่าย</td></tr>`;
-}
+  let value = String(col[i] || "")
+    .replace(/"/g, "")
+    .replace(/\r/g, "")
+    .trim()
+    .toUpperCase();
+
+  if (value === "TRUE" || value === "1") {
+    html += `<tr><td>${week}</td><td class="paid">จ่ายแล้ว</td></tr>`;
+  } else {
+    html += `<tr><td>${week}</td><td class="notpaid">ยังไม่จ่าย</td></tr>`;
+  }
 
 }
 }
@@ -199,5 +200,6 @@ result.innerHTML="โหลดข้อมูลไม่ได้";
 
 </body>
 </html>
+
 
 
