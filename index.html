@@ -1,56 +1,151 @@
 <!DOCTYPE html>
-<html>
+<html lang="th">
 <head>
 <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>เช็คสถานะจ่ายเงิน</title>
 
 <style>
-table{
-border-collapse:collapse;
-margin-top:20px;
+
+body{
+font-family:system-ui;
+background:#eef2f7;
+margin:0;
+padding:20px;
 }
 
-td,th{
-border:1px solid #ccc;
-padding:6px 10px;
+.container{
+max-width:600px;
+margin:auto;
+background:white;
+padding:25px;
+border-radius:14px;
+box-shadow:0 6px 20px rgba(0,0,0,0.1);
 }
+
+h2{
+text-align:center;
+margin-bottom:20px;
+}
+
+select,input{
+width:100%;
+padding:12px;
+margin:6px 0;
+border-radius:8px;
+border:1px solid #ccc;
+font-size:16px;
+}
+
+button{
+width:100%;
+padding:14px;
+margin-top:10px;
+border:none;
+border-radius:8px;
+background:#2563eb;
+color:white;
+font-size:18px;
+font-weight:bold;
+cursor:pointer;
+}
+
+button:hover{
+background:#1e4fd1;
+}
+
+table{
+width:100%;
+margin-top:20px;
+border-collapse:collapse;
+}
+
+th{
+background:#f3f4f6;
+padding:10px;
+}
+
+td{
+padding:10px;
+border-bottom:1px solid #eee;
+text-align:center;
+}
+
+.paid{
+color:#16a34a;
+font-weight:bold;
+}
+
+.notpaid{
+color:#dc2626;
+font-weight:bold;
+}
+
+.loading{
+text-align:center;
+margin-top:15px;
+}
+
 </style>
 
 </head>
 
 <body>
 
+<div class="container">
+
 <h2>เช็คสถานะจ่ายเงิน</h2>
 
-<input type="text" id="name" placeholder="พิมพ์ชื่อ">
+<select id="year">
+<option value="1">ปี 1</option>
+<option value="2">ปี 2</option>
+</select>
+
+<select id="term">
+<option value="1">เทอม 1</option>
+<option value="2">เทอม 2</option>
+</select>
+
+<input id="name" placeholder="พิมพ์ชื่อ">
+
 <button onclick="check()">ตรวจสอบ</button>
 
 <div id="result"></div>
 
+</div>
+
 <script>
 
-let sheetURL="https://docs.google.com/spreadsheets/d/e/2PACX-1vSSMjGfzpkmtPcq2Ble2vH1_ouN8P9hCkE8c5cDwLmrKTn3fB1Z7RL8qGikOLWQRtDcGWmaGxRidkz7/pub?output=csv";
+const sheets={
+"1-1":"https://docs.google.com/spreadsheets/d/e/2PACX-1vSSMjGfzpkmtPcq2Ble2vH1_ouN8P9hCkE8c5cDwLmrKTn3fB1Z7RL8qGikOLWQRtDcGWmaGxRidkz7/pub?gid=0&single=true&output=csv",
+"1-2":"https://docs.google.com/spreadsheets/d/e/2PACX-1vSSMjGfzpkmtPcq2Ble2vH1_ouN8P9hCkE8c5cDwLmrKTn3fB1Z7RL8qGikOLWQRtDcGWmaGxRidkz7/pub?gid=1983565584&single=true&output=csv",
+"2-1":"https://docs.google.com/spreadsheets/d/e/2PACX-1vSSMjGfzpkmtPcq2Ble2vH1_ouN8P9hCkE8c5cDwLmrKTn3fB1Z7RL8qGikOLWQRtDcGWmaGxRidkz7/pub?gid=372606240&single=true&output=csv"
+};
 
 async function check(){
 
 let result=document.getElementById("result");
-result.innerHTML="กำลังตรวจสอบ...";
+result.innerHTML='<div class="loading">กำลังตรวจสอบ...</div>';
 
-try{
+let year=document.getElementById("year").value;
+let term=document.getElementById("term").value;
+let url=sheets[year+"-"+term];
 
 let name=document.getElementById("name").value.trim().toLowerCase();
 
-let res=await fetch(sheetURL);
+try{
+
+let res=await fetch(url);
 let text=await res.text();
 
 let rows=text.split("\n");
 
-let found=false;
 let html="<table><tr><th>สัปดาห์</th><th>สถานะ</th></tr>";
+let found=false;
 
-for(let i=0;i<rows.length;i++){
+rows.forEach(r=>{
 
-let col=rows[i].split(",");
+let col=r.split(",");
 
 if(col[1]){
 
@@ -60,25 +155,23 @@ if(sheetName.includes(name)){
 
 found=true;
 
-for(let w=4;w<=19;w++){
+for(let i=4;i<=19;i++){
 
-let week=w-3;
+let week=i-3;
 
-if(col[w]==="TRUE"){
-html+="<tr><td>สัปดาห์ "+week+"</td><td>✅ จ่ายแล้ว</td></tr>";
+if(col[i]=="TRUE"){
+html+=`<tr><td>${week}</td><td class="paid">จ่ายแล้ว</td></tr>`;
 }else{
-html+="<tr><td>สัปดาห์ "+week+"</td><td>❌ ยังไม่จ่าย</td></tr>";
+html+=`<tr><td>${week}</td><td class="notpaid">ยังไม่จ่าย</td></tr>`;
 }
-
-}
-
-break;
 
 }
 
 }
 
 }
+
+});
 
 html+="</table>";
 
@@ -88,9 +181,9 @@ result.innerHTML="ไม่พบชื่อ";
 result.innerHTML=html;
 }
 
-}catch(err){
+}catch{
 
-result.innerHTML="เกิดข้อผิดพลาดในการโหลดข้อมูล";
+result.innerHTML="โหลดข้อมูลไม่ได้";
 
 }
 
