@@ -159,14 +159,15 @@ for(let i=4;i<=19;i++){
 
 let week=i-3;
 
-if(col[i]=="TRUE"){
+let value = (col[i] || "").replace(/\r/g,"").trim();
+
+if(value === "TRUE"){
 html+=`<tr><td>${week}</td><td class="paid">จ่ายแล้ว</td></tr>`;
 }else{
 html+=`<tr><td>${week}</td><td class="notpaid">ยังไม่จ่าย</td></tr>`;
 }
 
 }
-
 }
 
 }
@@ -193,3 +194,4 @@ result.innerHTML="โหลดข้อมูลไม่ได้";
 
 </body>
 </html>
+
