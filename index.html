@@ -159,9 +159,14 @@ for(let i=4;i<=19;i++){
 
 let week=i-3;
 
-let value = (col[i] || "").replace(/\r/g,"").trim();
+// ทำความสะอาดค่าที่อ่านจาก CSV
+let value=(col[i]||"")
+.replace(/"/g,"")   // ลบ "
+.replace(/\r/g,"")  // ลบ \r
+.trim()
+.toUpperCase();
 
-if(value === "TRUE"){
+if(value==="TRUE"){
 html+=`<tr><td>${week}</td><td class="paid">จ่ายแล้ว</td></tr>`;
 }else{
 html+=`<tr><td>${week}</td><td class="notpaid">ยังไม่จ่าย</td></tr>`;
@@ -194,4 +199,5 @@ result.innerHTML="โหลดข้อมูลไม่ได้";
 
 </body>
 </html>
+
 
