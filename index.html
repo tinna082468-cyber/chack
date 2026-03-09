@@ -156,11 +156,7 @@ border-radius:8px;
 
 <script>
 
-const sheets={
-"1-1":"https://docs.google.com/spreadsheets/d/e/2PACX-1vSSMjGfzpkmtPcq2Ble2vH1_ouN8P9hCkE8c5cDwLmrKTn3fB1Z7RL8qGikOLWQRtDcGWmaGxRidkz7/pub?gid=0&single=true&output=csv",
-"1-2":"https://docs.google.com/spreadsheets/d/e/2PACX-1vSSMjGfzpkmtPcq2Ble2vH1_ouN8P9hCkE8c5cDwLmrKTn3fB1Z7RL8qGikOLWQRtDcGWmaGxRidkz7/pub?gid=1983565584&single=true&output=csv",
-"2-1":"https://docs.google.com/spreadsheets/d/e/2PACX-1vSSMjGfzpkmtPcq2Ble2vH1_ouN8P9hCkE8c5cDwLmrKTn3fB1Z7RL8qGikOLWQRtDcGWmaGxRidkz7/pub?gid=372606240&single=true&output=csv"
-};
+const API_URL="https://script.google.com/macros/s/AKfycbwB0FHYLcWAUsQi1dKJbG3lkcc_0a7uWP4j32UcHNZWkJvIP-x3IN70vV7AeCn6aWR-6A/exec";
 
 async function check(){
 
@@ -169,7 +165,7 @@ result.innerHTML='<div class="loading">⏳ กำลังตรวจสอบ.
 
 let year=document.getElementById("year").value;
 let term=document.getElementById("term").value;
-let url=sheets[year+"-"+term];
+let url=API_URL+"?year="+year+"&term="+term;
 
 let name=document.getElementById("name").value.trim().toLowerCase();
 
@@ -243,3 +239,4 @@ result.innerHTML="❌ โหลดข้อมูลไม่ได้";
 
 </body>
 </html>
+
