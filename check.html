@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>เช็คสถานะจ่ายเงิน</title>
+</head>
+
+<body>
+
+<h2>เช็คสถานะจ่ายเงิน</h2>
+
+<input type="text" id="name" placeholder="พิมพ์ชื่อ">
+<button onclick="check()">ตรวจสอบ</button>
+
+<p id="result"></p>
+
+<script>
+
+let sheetURL="https://docs.google.com/spreadsheets/d/e/2PACX-1vSSMjGfzpkmtPcq2Ble2vH1_ouN8P9hCkE8c5cDwLmrKTn3fB1Z7RL8qGikOLWQRtDcGWmaGxRidkz7/pub?gid=0&single=true&output=csv";
+
+async function check(){
+
+let result=document.getElementById("result");
+result.innerHTML="กำลังตรวจสอบ...";
+
+try{
+
+let name=document.getElementById("name").value.trim().toLowerCase();
+
+let res=await fetch(sheetURL);
+let text=await res.text();
+
+let rows=text.split("\n");
+
+let found=false;
+
+for(let i=0;i<rows.length;i++){
+
+let col=rows[i].split(",");
+
+if(col[1]){
+
+let sheetName=col[1].toLowerCase();
+
+if(sheetName.includes(name)){
+
+found=true;
+
+let status=col[4];
+
+if(status==="TRUE"){
+result.innerHTML="✅ จ่ายแล้ว";
+}else{
+result.innerHTML="❌ ยังไม่จ่าย";
+}
+
+break;
+
+}
+
+}
+
+}
+
+if(!found){
+result.innerHTML="ไม่พบชื่อ";
+}
+
+}catch(err){
+
+document.getElementById("result").innerHTML="เกิดข้อผิดพลาดในการโหลดข้อมูล";
+
+}
+
+}
+
+</script>
+
+</body>
+</html>
