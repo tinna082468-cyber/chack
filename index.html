@@ -86,6 +86,13 @@ text-align:center;
 margin-top:15px;
 }
 
+.total{
+margin-top:15px;
+font-size:18px;
+font-weight:bold;
+text-align:center;
+}
+
 </style>
 
 </head>
@@ -142,6 +149,7 @@ let rows=text.split("\n");
 
 let html="<table><tr><th>สัปดาห์</th><th>สถานะ</th></tr>";
 let found=false;
+let unpaid=0;
 
 rows.forEach(r=>{
 
@@ -157,23 +165,23 @@ found=true;
 
 for (let i = 4; i <= 19; i++) {
 
-  let week = i - 3;
+let week=i-3;
 
-  console.log("week", week, "value:", col[i]);
+let value=String(col[i]||"")
+.replace(/"/g,"")
+.replace(/\r/g,"")
+.trim()
+.toUpperCase();
 
-  let value = String(col[i] || "")
-    .replace(/"/g, "")
-    .replace(/\r/g, "")
-    .trim()
-    .toUpperCase();
-
-  if (value === "TRUE" || value === "1") {
-    html += `<tr><td>${week}</td><td class="paid">จ่ายแล้ว</td></tr>`;
-  } else {
-    html += `<tr><td>${week}</td><td class="notpaid">ยังไม่จ่าย</td></tr>`;
-  }
+if(value==="TRUE"||value==="1"){
+html+=`<tr><td>${week}</td><td class="paid">จ่ายแล้ว</td></tr>`;
+}else{
+html+=`<tr><td>${week}</td><td class="notpaid">ยังไม่จ่าย</td></tr>`;
+unpaid++;
+}
 
 }
+
 }
 
 }
@@ -182,10 +190,12 @@ for (let i = 4; i <= 19; i++) {
 
 html+="</table>";
 
+let total=unpaid*20;
+
 if(!found){
 result.innerHTML="ไม่พบชื่อ";
 }else{
-result.innerHTML=html;
+result.innerHTML=html+`<div class="total">ยอดค้างชำระ: ${total} บาท</div>`;
 }
 
 }catch{
@@ -200,6 +210,3 @@ result.innerHTML="โหลดข้อมูลไม่ได้";
 
 </body>
 </html>
-
-
-
